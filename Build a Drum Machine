@@ -1,0 +1,66 @@
+import React, { useEffect, useState } from 'react';
+
+const drumPads = [
+  { key: 'Q', sound: 'Heater 1', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3' },
+  { key: 'W', sound: 'Heater 2', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-2.mp3' },
+  { key: 'E', sound: 'Heater 3', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-3.mp3' },
+  { key: 'A', sound: 'Heater 4', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-4_1.mp3' },
+  { key: 'S', sound: 'Clap', src: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-6.mp3' },
+  { key: 'D', sound: "Open-HH", src: 'https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3' },
+  { key: 'Z', sound: "Kick-n'-Hat", src: 'https://s3.amazonaws.com/freecodecamp/drums/Kick_n_Hat.mp3' },
+  { key: 'X', sound: 'Kick', src: 'https://s3.amazonaws.com/freecodecamp/drums/RP4_KICK_1.mp3' },
+  { key: 'C', sound: 'Closed-HH', src: 'https://s3.amazonaws.com/freecodecamp/drums/Cev_H2.mp3' }
+];
+
+const DrumPad = ({ keyTrigger, sound, src, handleDisplay }) => {
+  const playSound = () => {
+    const audio = document.getElementById(keyTrigger);
+    audio.currentTime = 0;
+    audio.play();
+    handleDisplay(sound);
+  };
+
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key.toUpperCase() === keyTrigger) {
+        playSound();
+      }
+    };
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+  }, []);
+
+  return (
+    <div id={sound} className="drum-pad" onClick={playSound}>
+      {keyTrigger}
+      <audio className="clip" id={keyTrigger} src={src}></audio>
+    </div>
+  );
+};
+
+const DrumMachine = () => {
+  const [display, setDisplay] = useState('');
+
+  const handleDisplay = (sound) => {
+    setDisplay(sound);
+  };
+
+  return (
+    <div id="drum-machine" className="p-4 bg-gray-800 text-white rounded-xl shadow-lg">
+      <div id="display" className="mb-4 text-xl font-bold text-center">{display}</div>
+      <div className="grid grid-cols-3 gap-4">
+        {drumPads.map(pad => (
+          <DrumPad
+            key={pad.key}
+            keyTrigger={pad.key}
+            sound={pad.sound}
+            src={pad.src}
+            handleDisplay={handleDisplay}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default DrumMachine;
