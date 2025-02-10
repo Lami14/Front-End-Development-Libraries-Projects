@@ -1,0 +1,60 @@
+import React, { useState, useEffect } from 'react';
+import { marked } from 'marked';
+
+const defaultMarkdown = `# Welcome to my Markdown Previewer!
+
+## This is a sub-heading
+
+[Visit freeCodeCamp](https://www.freecodecamp.org)
+
+Here is some inline code: \`<div></div>\`
+
+```
+// This is a code block
+function greet() {
+  console.log('Hello, World!');
+}
+```
+
+- List item one
+- List item two
+- List item three
+
+> This is a blockquote
+
+![freeCodeCamp Logo](https://cdn.freecodecamp.org/testable-projects-fcc/images/fcc_secondary.svg)
+
+**This text is bold**`;
+
+const App = () => {
+  const [markdown, setMarkdown] = useState(defaultMarkdown);
+
+  const handleChange = (event) => {
+    setMarkdown(event.target.value);
+  };
+
+  useEffect(() => {
+    marked.setOptions({ breaks: true });
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-4">
+      <h1 className="text-center text-3xl font-bold text-blue-600 mb-4">Markdown Previewer</h1>
+      <div className="flex flex-col md:flex-row gap-4">
+        <textarea
+          id="editor"
+          value={markdown}
+          onChange={handleChange}
+          className="w-full md:w-1/2 h-64 p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+        ></textarea>
+        <div
+          id="preview"
+          className="w-full md:w-1/2 h-64 p-4 border-2 border-gray-300 rounded-lg bg-white overflow-auto"
+          dangerouslySetInnerHTML={{ __html: marked(markdown) }}
+        ></div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
