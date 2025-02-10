@@ -1,0 +1,73 @@
+import React, { useState } from 'react';
+
+const Calculator = () => {
+  const [input, setInput] = useState('0');
+  const [formula, setFormula] = useState('');
+  const [lastPressed, setLastPressed] = useState('');
+
+  const handleClick = (value) => {
+    if (value === 'clear') {
+      setInput('0');
+      setFormula('');
+      setLastPressed('');
+    } else if (value === 'equals') {
+      try {
+        const result = eval(formula);
+        setInput(result.toString());
+        setFormula(result.toString());
+      } catch {
+        setInput('Error');
+        setFormula('');
+      }
+    } else if (['add', 'subtract', 'multiply', 'divide'].includes(value)) {
+      const operator = { add: '+', subtract: '-', multiply: '*', divide: '/' }[value];
+      if (['+', '-', '*', '/'].includes(lastPressed)) {
+        setFormula(formula.slice(0, -1) + operator);
+      } else {
+        setFormula(formula + operator);
+      }
+      setInput(operator);
+      setLastPressed(operator);
+    } else if (value === 'decimal') {
+      if (!input.includes('.')) {
+        setInput(input + '.');
+        setFormula(formula + '.');
+      }
+    } else {
+      if (input === '0' || ['+', '-', '*', '/'].includes(lastPressed)) {
+        setInput(value);
+      } else {
+        setInput(input + value);
+      }
+      setFormula(formula + value);
+    }
+    setLastPressed(value);
+  };
+
+  return (
+    <div className="calculator">
+      <div id="display">{input}</div>
+      <div className="buttons">
+        <button id="clear" onClick={() => handleClick('clear')}>AC</button>
+        <button id="divide" onClick={() => handleClick('divide')}>/</button>
+        <button id="multiply" onClick={() => handleClick('multiply')}>*</button>
+        <button id="seven" onClick={() => handleClick('7')}>7</button>
+        <button id="eight" onClick={() => handleClick('8')}>8</button>
+        <button id="nine" onClick={() => handleClick('9')}>9</button>
+        <button id="subtract" onClick={() => handleClick('subtract')}>-</button>
+        <button id="four" onClick={() => handleClick('4')}>4</button>
+        <button id="five" onClick={() => handleClick('5')}>5</button>
+        <button id="six" onClick={() => handleClick('6')}>6</button>
+        <button id="add" onClick={() => handleClick('add')}>+</button>
+        <button id="one" onClick={() => handleClick('1')}>1</button>
+        <button id="two" onClick={() => handleClick('2')}>2</button>
+        <button id="three" onClick={() => handleClick('3')}>3</button>
+        <button id="equals" onClick={() => handleClick('equals')}>=</button>
+        <button id="zero" onClick={() => handleClick('0')}>0</button>
+        <button id="decimal" onClick={() => handleClick('decimal')}>.</button>
+      </div>
+    </div>
+  );
+};
+
+export default Calculator;
