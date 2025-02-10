@@ -1,0 +1,91 @@
+
+import React, { useState, useEffect, useRef } from "react";
+
+const App = () => {
+  const [breakLength, setBreakLength] = useState(5);
+  const [sessionLength, setSessionLength] = useState(25);
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [isRunning, setIsRunning] = useState(false);
+  const [isSession, setIsSession] = useState(true);
+  const timerRef = useRef(null);
+  const audioRef = useRef(null);
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes < 10 ? "0" : ""}${minutes}:$${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+
+  const handleReset = () => {
+    clearInterval(timerRef.current);
+    setBreakLength(5);
+    setSessionLength(25);
+    setTimeLeft(25 * 60);
+    setIsRunning(false);
+    setIsSession(true);
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+  };
+
+  const handleStartStop = () => {
+    if (isRunning) {
+      clearInterval(timerRef.current);
+      setIsRunning(false);
+    } else {
+      setIsRunning(true);
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev === 0) {
+            audioRef.current.play();
+            setIsSession((prevSession) => !prevSession);
+            return isSession ? breakLength * 60 : sessionLength * 60;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+  };
+
+  const handleIncrement = (type) => {
+    if (type === "break" && breakLength < 60) setBreakLength(breakLength + 1);
+    if (type === "session" && sessionLength < 60) {
+      setSessionLength(sessionLength + 1);
+      if (isSession) setTimeLeft((sessionLength + 1) * 60);
+    }
+  };
+
+  const handleDecrement = (type) => {
+    if (type === "break" && breakLength > 1) setBreakLength(breakLength - 1);
+    if (type === "session" && sessionLength > 1) {
+      setSessionLength(sessionLength - 1);
+      if (isSession) setTimeLeft((sessionLength - 1) * 60);
+    }
+  };
+
+  return (
+    <div className="clock">
+      <h1>25 + 5 Clock</h1>
+      <div className="length-control">
+        <div id="break-label">
+          Break Length
+          <button id="break-decrement" onClick={() => handleDecrement("break")}>-</button>
+          <span id="break-length">{breakLength}</span>
+          <button id="break-increment" onClick={() => handleIncrement("break")}>+</button>
+        </div>
+        <div id="session-label">
+          Session Length
+          <button id="session-decrement" onClick={() => handleDecrement("session")}>-</button>
+          <span id="session-length">{sessionLength}</span>
+          <button id="session-increment" onClick={() => handleIncrement("session")}>+</button>
+        </div>
+      </div>
+      <div id="timer-label">{isSession ? "Session" : "Break"}</div>
+      <div id="time-left">{formatTime(timeLeft)}</div>
+      <button id="start_stop" onClick={handleStartStop}>Start/Stop</button>
+      <button id="reset" onClick={handleReset}>Reset</button>
+      <audio id="beep" ref={audioRef} src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+    </div>
+  );
+};
+
+export default App;
