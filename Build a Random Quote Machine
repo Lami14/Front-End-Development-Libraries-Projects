@@ -1,0 +1,50 @@
+import React, { useState, useEffect } from 'react';
+
+const quotes = [
+  { text: "Be yourself; everyone else is already taken.", author: "Oscar Wilde" },
+  { text: "Two things are infinite: the universe and human stupidity; and I'm not sure about the universe.", author: "Albert Einstein" },
+  { text: "So many books, so little time.", author: "Frank Zappa" },
+  { text: "A room without books is like a body without a soul.", author: "Marcus Tullius Cicero" },
+  { text: "In three words I can sum up everything I've learned about life: it goes on.", author: "Robert Frost" }
+];
+
+export default function RandomQuoteMachine() {
+  const [quote, setQuote] = useState({ text: '', author: '' });
+
+  const getRandomQuote = () => {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    setQuote(quotes[randomIndex]);
+  };
+
+  useEffect(() => {
+    getRandomQuote();
+  }, []);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div id="quote-box" className="bg-white p-6 rounded-2xl shadow-lg max-w-md text-center">
+        <p id="text" className="text-2xl font-semibold text-gray-800">"{quote.text}"</p>
+        <p id="author" className="mt-4 text-lg text-gray-600">- {quote.author}</p>
+
+        <div className="mt-6 flex justify-between items-center">
+          <a
+            id="tweet-quote"
+            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(quote.text + ' - ' + quote.author)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+          >
+            Tweet
+          </a>
+          <button
+            id="new-quote"
+            onClick={getRandomQuote}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+          >
+            New Quote
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
